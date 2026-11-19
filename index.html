@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>ProxiPause – Questionnaire techniciens</title>
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f2ec;--surface:#fff;--sand:#e9dfd3;--green:#82b550;--green-dark:#5e8f2e;--green-soft:#eef5e6;--brown:#4a2a14;--muted:#7c6453;--coral:#ef725c;--coral-soft:#fdeee9;--line:#e6ddd2;--shadow:0 2px 10px rgba(74,42,20,.08);--top:env(safe-area-inset-top);--bot:env(safe-area-inset-bottom)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--brown);font:16px/1.45 Lato,"Segoe UI",system-ui,sans-serif}
+button{font:inherit;color:inherit}
+.hidden{display:none!important}
+.appbar{position:fixed;top:0;left:0;right:0;z-index:10;background:var(--surface);padding:calc(10px + var(--top)) 12px 10px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 0 var(--line)}
+.appbar img{width:34px;height:34px;border-radius:9px}
+.appbar .name{font-weight:900;font-size:18px;flex:1;line-height:1.1}
+.appbar .name span{color:var(--green-dark)}
+.appbar .name small{display:block;font-weight:700;font-size:12px;color:var(--muted)}
+.iconbtn{width:40px;height:40px;border:0;background:none;border-radius:50%;display:grid;place-items:center;cursor:pointer}
+.iconbtn svg{width:24px;height:24px}
+.progress{position:fixed;left:0;right:0;top:calc(62px + var(--top));height:4px;background:var(--sand);z-index:10}
+.progress div{height:100%;background:var(--green);transition:width .3s}
+.screen{max-width:560px;margin:0 auto;padding:calc(88px + var(--top)) 18px calc(120px + var(--bot));animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:13px;font-weight:700;color:var(--green-dark);text-transform:uppercase;letter-spacing:.08em;margin:6px 0 4px}
+.q{font-size:25px;font-weight:900;line-height:1.2;margin:0 0 6px}
+.help{color:var(--muted);margin:0 0 10px;font-size:15px}
+.block{margin-top:22px}
+.label{font-weight:900;font-size:17px;margin:0 0 4px}
+.label .req{color:var(--coral)}
+.sub{color:var(--muted);font-size:14px;margin:0 0 10px}
+.field{width:100%;font:inherit;font-size:17px;padding:14px 16px;border:2px solid var(--line);border-radius:14px;background:var(--surface);color:var(--brown)}
+textarea.field{min-height:120px;resize:none}
+.field:focus{outline:0;border-color:var(--green)}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 16px;cursor:pointer;font-weight:700;font-size:15px}
+.pill.on{background:var(--green-dark);border-color:var(--green-dark);color:#fff}
+.rate{background:var(--surface);border-radius:14px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow)}
+.rate .t{font-weight:700;margin-bottom:8px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{border:2px solid var(--line);background:#fff;border-radius:10px;padding:9px 4px;font-weight:700;font-size:14px;cursor:pointer}
+.seg button.on[data-v="Indispensable"]{background:var(--green-dark);border-color:var(--green-dark);color:#fff}
+.seg button.on[data-v="Utile"]{background:var(--green-soft);border-color:var(--green);color:var(--green-dark)}
+.seg button.on[data-v="Pas utile"]{background:var(--sand);border-color:var(--muted);color:var(--brown)}
+.dictate{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px auto 0;border:0;background:var(--green-soft);color:var(--green-dark);border-radius:999px;padding:10px 18px;font-weight:900;cursor:pointer}
+.dictate svg{width:20px;height:20px}
+.dictate.live{background:var(--coral);color:#fff}
+.count{font-size:13px;color:var(--muted);margin-top:6px}
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:10;background:linear-gradient(rgba(247,242,236,0),var(--bg) 30%);padding:18px 18px calc(16px + var(--bot))}
+.bottom .in{max-width:560px;margin:0 auto}
+.primary{width:100%;border:0;border-radius:16px;padding:17px;background:var(--green-dark);color:#fff;font-weight:900;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 14px rgba(94,143,46,.3)}
+.err{background:var(--coral-soft);color:#b5462f;border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;margin-top:14px}
+.intro{background:var(--green-dark);color:#fff;border-radius:22px;padding:22px;margin:10px 0 18px}
+.intro h1{margin:0 0 8px;font-size:24px;font-weight:900}
+.intro p{margin:0 0 8px;opacity:.95}
+.points{background:var(--surface);border-radius:16px;padding:6px 16px;box-shadow:var(--shadow)}
+.points div{padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:10px}
+.points div:last-child{border:0}
+.points b{color:var(--green-dark);min-width:92px;flex:none}
+.done{text-align:center;padding-top:40px}
+.check{width:96px;height:96px;margin:0 auto 18px;border-radius:50%;background:var(--green-dark);color:#fff;display:grid;place-items:center;font-size:52px;font-weight:900}
+.spin{width:20px;height:20px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.brandfoot{text-align:center;margin-top:22px}
+.brandfoot img{height:34px}
+</style>
+</head>
+<body>
+<div class="appbar">
+  <button class="iconbtn hidden" id="backBtn" aria-label="Retour"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <img src="icon-192.png" alt="" id="appIcon">
+  <div class="name">Proxi<span>Pause</span><small>Questionnaire techniciens</small></div>
+</div>
+<div class="progress hidden" id="progress"><div id="bar"></div></div>
+<main id="app"></main>
+<div class="bottom" id="bottom"><div class="in"><button class="primary" id="mainBtn">Commencer</button></div></div>
+
+<script>
+/* ====== RÉGLAGES : l'adresse du script Google (se termine par /exec) ====== */
+const ADRESSE_SCRIPT = "COLLEZ_ICI_L_URL_DU_SCRIPT_GOOGLE";
+const CLE = "proxipause-pannes"; // identique au script Google
+/* ============================================================ */
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+
+const INFOS=["Le code erreur et sa signification","Le symptôme décrit par le client","L'historique des pannes de cette machine","La date et le contenu de la dernière intervention",
+"Les données de télémétrie (Televend) : alertes, ventes, températures","Le numéro de série / la version de la machine","Un pas-à-pas de diagnostic","Des photos de la pièce ou de la panne",
+"Un tutoriel vidéo de réparation","Un schéma ou une vue éclatée de la machine","La référence des pièces et le stock disponible","Les astuces des collègues expérimentés",
+"Le temps moyen de réparation","Le contact d'un expert à appeler"];
+
+const SCREENS=[
+ {eyebrow:"1 · Vous",title:"Pour commencer",qs:[
+  {id:"nom",type:"text",label:"Votre nom et prénom",req:true},
+  {id:"anciennete",type:"chips",label:"Depuis combien de temps êtes-vous technicien ?",options:["Moins d'1 an","1 à 3 ans","3 à 10 ans","Plus de 10 ans"],req:true},
+  {id:"secteur",type:"text",label:"Votre secteur ou zone",placeholder:"Ex. Toulouse nord"},
+  {id:"machines",type:"multi",label:"Les machines que vous dépannez",sub:"Plusieurs choix possibles",options:["Café / boissons chaudes","Snacks","Boissons fraîches","Fontaines à eau","Autre"],req:true},
+  {id:"marques",type:"multi",label:"Les marques que vous rencontrez le plus",sub:"Plusieurs choix possibles",options:["Necta / Evoca","Bianchi","Rheavendors","Saeco","Sielaff","Jofemar","Azkoyen","Autre"]},
+  {id:"marques_autres",type:"text",label:"Autres marques ou modèles fréquents",placeholder:"Ex. Kalea, Lei600…"}]},
+ {eyebrow:"2 · Les pannes",title:"Les pannes que vous voyez le plus",qs:[
+  {id:"pannes_frequentes",type:"textarea",label:"Les 3 à 5 pannes les plus fréquentes",sub:"Une par ligne, avec la machine si possible.",req:true,placeholder:"Ex. Necta Kalea : gobelet qui ne tombe pas"},
+  {id:"panne_difficile",type:"textarea",label:"La panne la plus difficile à diagnostiquer, et pourquoi"},
+  {id:"panne_nouveau",type:"textarea",label:"Une panne qu'un nouveau technicien ne saurait pas réparer seul"}]},
+ {eyebrow:"3 · Sur le terrain",title:"Quand vous arrivez sur une panne",qs:[
+  {id:"temps_diagnostic",type:"chips",label:"En général, combien de temps pour trouver la cause ?",options:["Moins de 5 min","5 à 15 min","15 à 30 min","Plus de 30 min"],req:true},
+  {id:"pertes_temps",type:"multi",label:"Ce qui vous fait perdre le plus de temps",sub:"3 choix maximum",max:3,options:["Trouver la cause","Ne pas avoir la bonne pièce","Chercher le manuel","Joindre un collègue ou le fournisseur","Infos client incomplètes","Accès difficile à la machine","Revenir une 2e fois","Autre"],req:true},
+  {id:"pertes_temps_detail",type:"textarea",label:"Un exemple concret ?",sub:"Facultatif"}]},
+ {eyebrow:"4 · Les infos utiles",title:"De quoi avez-vous besoin pour dépanner vite ?",help:"Pour chaque information, dites si elle vous serait indispensable, utile ou pas utile.",qs:[
+  {id:"infos",type:"rating",items:INFOS},
+  {id:"info_manquante",type:"textarea",label:"Une information qui vous manque souvent ?",sub:"Ce que vous aimeriez savoir avant d'ouvrir la machine."}]},
+ {eyebrow:"5 · Vos sources",title:"Aujourd'hui, comment trouvez-vous l'info ?",qs:[
+  {id:"sources",type:"multi",label:"Quand vous bloquez, vous…",sub:"Plusieurs choix possibles",options:["Comptez sur votre expérience","Appelez un collègue","Consultez un manuel papier","Consultez un manuel PDF sur le téléphone","Appelez le fournisseur / la hotline","Cherchez sur internet / YouTube","Appelez votre responsable"],req:true},
+  {id:"source_meilleure",type:"text",label:"Votre source la plus fiable aujourd'hui"}]},
+ {eyebrow:"6 · Votre téléphone",title:"L'appli dans votre quotidien",qs:[
+  {id:"reseau",type:"chips",label:"Avez-vous du réseau sur les sites ?",options:["Toujours","Souvent","Parfois","Rarement"],req:true},
+  {id:"moment_fiche",type:"multi",label:"Quand pourriez-vous remplir une fiche de panne ?",options:["Sur place","Dans le véhicule","En fin de journée","Je ne vois pas quand"],req:true},
+  {id:"temps_fiche",type:"chips",label:"Combien de temps maximum pour remplir une fiche ?",options:["2 min","5 min","10 min","Plus si c'est utile"]},
+  {id:"telephone",type:"chips",label:"Votre téléphone",options:["Android","iPhone","Les deux / autre"]},
+  {id:"dictee",type:"chips",label:"Dicter au lieu d'écrire, ça vous irait ?",options:["Oui","Peut-être","Non"]},
+  {id:"photos",type:"chips",label:"Prendre des photos de la panne, ça vous irait ?",options:["Oui","Peut-être","Non"]}]},
+ {eyebrow:"7 · L'assistant",title:"Un assistant de dépannage dans votre poche",help:"Imaginez : vous êtes devant une machine en panne et vous posez votre question à un assistant sur votre téléphone.",qs:[
+  {id:"questions_assistant",type:"textarea",label:"Quelles questions lui poseriez-vous ?",sub:"Donnez 2 ou 3 exemples, avec vos mots.",req:true,placeholder:"Ex. Code E07 sur une Necta Kalea, je fais quoi ?"},
+  {id:"poser_question",type:"multi",label:"Comment voudriez-vous poser la question ?",options:["En écrivant","En parlant (vocal)","En photographiant l'écran ou la pièce","En choisissant dans une liste (machine, code erreur)"],req:true},
+  {id:"format_reponse",type:"multi",label:"Sous quelle forme voudriez-vous la réponse ?",sub:"3 choix maximum",max:3,options:["Une réponse courte","Un pas-à-pas","Une photo ou un schéma","Une vidéo","Une réponse lue à voix haute","Le lien vers le manuel"],req:true},
+  {id:"confiance",type:"chips",label:"Feriez-vous confiance à ses réponses ?",options:["Oui","Oui, si je vois la source","Pas sûr","Non"]},
+  {id:"hors_ligne",type:"chips",label:"Doit-il marcher sans réseau ?",options:["Indispensable","Ce serait bien","Pas nécessaire"]}]},
+ {eyebrow:"8 · L'appli idéale",title:"Ce qui vous aiderait vraiment",qs:[
+  {id:"fonctions",type:"multi",label:"Les 3 fonctions qui vous aideraient le plus",sub:"3 choix maximum",max:3,req:true,options:["Chercher une panne par code erreur","Un pas-à-pas de diagnostic","Des tutoriels vidéo","Poser une question à un assistant","Contacter un expert en direct","L'historique de la machine","La liste des pièces et leur stock","Partager mes astuces avec l'équipe"]},
+  {id:"frein",type:"textarea",label:"Qu'est-ce qui vous empêcherait d'utiliser un tel outil ?",sub:"Soyez franc, c'est très utile."},
+  {id:"idee",type:"textarea",label:"Une autre idée ou remarque ?"}]},
+ {eyebrow:"9 · Pour la suite",title:"Votre participation",qs:[
+  {id:"partage",type:"chips",label:"Seriez-vous prêt à partager vos pannes et astuces pour enrichir l'assistant ?",options:["Oui","Peut-être","Non"]},
+  {id:"referent",type:"chips",label:"Seriez-vous d'accord pour relire les fiches de vos collègues (expert référent) ?",options:["Oui","Peut-être","Non"]},
+  {id:"testeur",type:"chips",label:"Voulez-vous tester l'assistant en avant-première ?",options:["Oui","Non"]}]}
+];
+
+let a=store.get("ptdq_draft",{});let view=store.get("ptdq_sent",false)?"done":"intro";let idx=0;
+
+/* ---- dictée ---- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null;
+function mic(btn,el){if(rec){try{rec.stop()}catch(e){}rec=null;return}
+  rec=new SR();rec.lang="fr-FR";rec.continuous=true;btn.classList.add("live");btn.lastChild.textContent=" J'écoute… touchez pour arrêter";
+  rec.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal){const t=e.results[i][0].transcript.trim();if(t){el.value=(el.value?el.value.replace(/\s*$/," "):"")+t;el.dispatchEvent(new Event("input"))}}};
+  rec.onend=()=>{btn.classList.remove("live");btn.lastChild.textContent=" Dicter";rec=null};try{rec.start()}catch(e){rec=null;btn.classList.remove("live")}}
+const MIC='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg>';
+
+function save(){store.set("ptdq_draft",a)}
+function chrome(back,progress,label){$("backBtn").classList.toggle("hidden",!back);$("appIcon").classList.toggle("hidden",back);
+  $("progress").classList.toggle("hidden",progress==null);if(progress!=null)$("bar").style.width=progress+"%";
+  $("bottom").classList.toggle("hidden",!label);if(label)$("mainBtn").innerHTML=label}
+
+function render(){if(rec){try{rec.stop()}catch(e){}}window.scrollTo(0,0);
+  if(view==="intro")return intro();if(view==="done")return done();screen()}
+
+function intro(){
+  $("app").innerHTML='<section class="screen"><div class="intro"><h1>Votre avis compte</h1><p>Nous préparons un assistant de dépannage sur téléphone : vous lui posez une question sur une panne, il vous répond à partir des manuels et de l\'expérience de l\'équipe.</p><p>Pour qu\'il vous aide vraiment sur le terrain, dites-nous ce dont vous avez besoin.</p></div>'+
+  '<div class="points"><div><b>12 min</b><span>environ, depuis votre téléphone</span></div><div><b>Micro</b><span>vous pouvez dicter vos réponses</span></div><div><b>Pas de piège</b><span>il n\'y a pas de bonne ou de mauvaise réponse</span></div><div><b>Pause</b><span>vos réponses sont gardées si vous quittez</span></div></div>'+
+  '<div class="brandfoot"><img src="logo.png" alt="ProxiPause et Buenavita"></div></section>';
+  chrome(false,null,Object.keys(a).length?"Reprendre le questionnaire":"Commencer");
+  $("mainBtn").onclick=()=>{view="form";idx=0;render()};
+}
+
+function qHtml(q){
+  let h='<div class="block">';
+  if(q.label)h+='<p class="label">'+esc(q.label)+(q.req?' <span class="req">*</span>':'')+'</p>';
+  if(q.sub)h+='<p class="sub">'+esc(q.sub)+'</p>';
+  const v=a[q.id];
+  if(q.type==="text")h+='<input class="field" data-id="'+q.id+'" type="text" placeholder="'+esc(q.placeholder||"")+'" value="'+esc(v||"")+'">';
+  if(q.type==="textarea")h+='<textarea class="field" data-id="'+q.id+'" id="ta_'+q.id+'" placeholder="'+esc(q.placeholder||"")+'">'+esc(v||"")+'</textarea>'+(SR?'<button class="dictate" data-mic="ta_'+q.id+'">'+MIC+'<span> Dicter</span></button>':'');
+  if(q.type==="chips")h+='<div class="pills">'+q.options.map(o=>'<button class="pill'+(v===o?" on":"")+'" data-chip="'+q.id+'" data-v="'+esc(o)+'">'+esc(o)+'</button>').join("")+'</div>';
+  if(q.type==="multi"){const arr=v||[];h+='<div class="pills">'+q.options.map(o=>'<button class="pill'+(arr.includes(o)?" on":"")+'" data-multi="'+q.id+'" data-v="'+esc(o)+'">'+esc(o)+'</button>').join("")+'</div>'}
+  if(q.type==="rating"){const r=v||{};h+=q.items.map((it,i)=>'<div class="rate"><div class="t">'+esc(it)+'</div><div class="seg">'+["Indispensable","Utile","Pas utile"].map(o=>'<button class="'+(r[it]===o?"on":"")+'" data-rate="'+i+'" data-v="'+o+'">'+o+'</button>').join("")+'</div></div>').join("")+'<p class="count" id="rateCount"></p>'}
+  return h+'</div>';
+}
+
+function screen(){
+  const s=SCREENS[idx];
+  $("app").innerHTML='<section class="screen"><p class="eyebrow">'+esc(s.eyebrow)+'</p><h1 class="q">'+esc(s.title)+'</h1>'+(s.help?'<p class="help">'+esc(s.help)+'</p>':'')+s.qs.map(qHtml).join("")+'<div id="err" class="err hidden"></div></section>';
+  const last=idx===SCREENS.length-1;
+  chrome(true,Math.round((idx+1)/SCREENS.length*100),last?"Envoyer mes réponses":"Continuer");
+  const app=$("app");
+  app.querySelectorAll("[data-id]").forEach(el=>el.oninput=()=>{a[el.dataset.id]=el.value;save()});
+  app.querySelectorAll("[data-mic]").forEach(b=>b.onclick=()=>mic(b,$(b.dataset.mic)));
+  app.querySelectorAll("[data-chip]").forEach(b=>b.onclick=()=>{const id=b.dataset.chip;a[id]=a[id]===b.dataset.v?"":b.dataset.v;save();
+    app.querySelectorAll('[data-chip="'+id+'"]').forEach(x=>x.classList.toggle("on",a[id]===x.dataset.v))});
+  app.querySelectorAll("[data-multi]").forEach(b=>b.onclick=()=>{const id=b.dataset.multi,q=s.qs.find(x=>x.id===id);let arr=a[id]||[];
+    if(arr.includes(b.dataset.v))arr=arr.filter(x=>x!==b.dataset.v);else{if(q.max&&arr.length>=q.max){toastErr(q.max+" choix maximum.");return}arr=arr.concat(b.dataset.v)}
+    a[id]=arr;save();b.classList.toggle("on",arr.includes(b.dataset.v))});
+  const rq=s.qs.find(q=>q.type==="rating");
+  const upd=()=>{if(!$("rateCount"))return;const n=Object.keys(a.infos||{}).length;$("rateCount").textContent=n+" / "+rq.items.length+" informations notées"};
+  app.querySelectorAll("[data-rate]").forEach(b=>b.onclick=()=>{const it=rq.items[+b.dataset.rate];a.infos=a.infos||{};
+    if(a.infos[it]===b.dataset.v)delete a.infos[it];else a.infos[it]=b.dataset.v;save();
+    b.parentNode.querySelectorAll("button").forEach(x=>x.classList.toggle("on",a.infos[it]===x.dataset.v));upd()});
+  upd();
+  $("mainBtn").onclick=()=>{const miss=s.qs.filter(q=>q.req&&!(Array.isArray(a[q.id])?a[q.id].length:String(a[q.id]||"").trim()));
+    if(miss.length){toastErr("Il manque une réponse : « "+miss[0].label+" »");return}
+    if(rq&&Object.keys(a.infos||{}).length<rq.items.length){toastErr("Notez chaque information (il en reste "+(rq.items.length-Object.keys(a.infos||{}).length)+").");return}
+    if(last)send();else{idx++;render()}};
+}
+function toastErr(m){const e=$("err");e.textContent=m;e.classList.remove("hidden");e.scrollIntoView({behavior:"smooth",block:"center"})}
+$("backBtn").onclick=()=>{if(idx>0){idx--}else view="intro";render()};
+
+async function post(p){const r=await fetch(ADRESSE_SCRIPT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(p)});const j=await r.json();if(!j.ok)throw new Error(j.error||"refus")}
+async function send(){
+  if(ADRESSE_SCRIPT.indexOf("http")!==0){toastErr("Le questionnaire n'est pas encore relié au script Google.");return}
+  const rep={};SCREENS.forEach(s=>s.qs.forEach(q=>{if(q.type==="rating")INFOS.forEach(it=>rep["Info – "+it]=(a.infos||{})[it]||"");else{const v=a[q.id];rep[q.label||q.id]=Array.isArray(v)?v.join(" ; "):(v||"")}}));
+  const payload={action:"questionnaire",cle:CLE,nom:a.nom||"",date:new Date().toISOString(),reponses:rep};
+  const btn=$("mainBtn");btn.disabled=true;btn.innerHTML='<span class="spin"></span> Envoi…';
+  try{await post(payload);store.set("ptdq_sent",true);try{localStorage.removeItem("ptdq_draft")}catch(e){}view="done";render()}
+  catch(e){btn.disabled=false;btn.textContent="Réessayer l'envoi";toastErr(!navigator.onLine||e instanceof TypeError?"Pas de réseau pour le moment. Vos réponses sont gardées : réessayez quand vous captez.":"L'envoi n'a pas marché. Réessayez dans un instant.")}
+}
+function done(){$("app").innerHTML='<section class="screen done"><div class="check">✓</div><h1 class="q">Merci beaucoup !</h1><p class="help">Vos réponses vont nous aider à construire un assistant de dépannage vraiment utile pour vous.</p><div class="brandfoot"><img src="logo.png" alt="ProxiPause et Buenavita"></div></section>';chrome(false,null,null)}
+render();
+})();
+</script>
+</body>
+</html>
