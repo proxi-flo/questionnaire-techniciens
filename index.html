@@ -98,7 +98,7 @@ const INFOS=["Le code erreur et sa signification","Le symptôme décrit par le c
 
 const SCREENS=[
  {eyebrow:"1 · Vous",title:"Pour commencer",qs:[
-  {id:"nom",type:"text",label:"Votre nom et prénom",req:true},
+  {id:"nom",type:"text",label:"Votre prénom ou un pseudo",sub:"Pas de nom de famille.",placeholder:"Ex. Jean ou Tech31",req:true},
   {id:"anciennete",type:"chips",label:"Depuis combien de temps êtes-vous technicien ?",options:["Moins d'1 an","1 à 3 ans","3 à 10 ans","Plus de 10 ans"],req:true},
   {id:"secteur",type:"text",label:"Votre secteur ou zone",placeholder:"Ex. Toulouse nord"},
   {id:"machines",type:"multi",label:"Les machines que vous dépannez",sub:"Plusieurs choix possibles",options:["Café / boissons chaudes","Snacks","Boissons fraîches","Fontaines à eau","Autre"],req:true},
