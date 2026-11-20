@@ -161,7 +161,7 @@ function render(){if(rec){try{rec.stop()}catch(e){}}window.scrollTo(0,0);
 
 function intro(){
   $("app").innerHTML='<section class="screen"><div class="intro"><h1>Votre avis compte</h1><p>Nous préparons un assistant de dépannage sur téléphone : vous lui posez une question sur une panne, il vous répond à partir des manuels et de l\'expérience de l\'équipe.</p><p>Pour qu\'il vous aide vraiment sur le terrain, dites-nous ce dont vous avez besoin.</p></div>'+
-  '<div class="points"><div><b>12 min</b><span>environ, depuis votre téléphone</span></div><div><b>Micro</b><span>vous pouvez dicter vos réponses</span></div><div><b>Pas de piège</b><span>il n\'y a pas de bonne ou de mauvaise réponse</span></div><div><b>Pause</b><span>vos réponses sont gardées si vous quittez</span></div></div>'+
+  '<div class="points"><div><b>12 min</b><span>environ, depuis votre téléphone</span></div><div><b>Micro</b><span>vous pouvez dicter vos réponses</span></div><div><b>Pas de piège</b><span>il n\'y a pas de bonne ou de mauvaise réponse</span></div><div><b>Pause</b><span>vos réponses sont gardées si vous quittez</span></div><div><b>Sans réseau</b><span>ça marche aussi : l\'envoi se fera au retour du réseau</span></div></div>'+
   '<div class="brandfoot"><img src="logo.png" alt="ProxiPause et Buenavita"></div></section>';
   chrome(false,null,Object.keys(a).length?"Reprendre le questionnaire":"Commencer");
   $("mainBtn").onclick=()=>{view="form";idx=0;render()};
@@ -213,10 +213,16 @@ async function send(){
   const rep={};SCREENS.forEach(s=>s.qs.forEach(q=>{if(q.type==="rating")INFOS.forEach(it=>rep["Info – "+it]=(a.infos||{})[it]||"");else{const v=a[q.id];rep[q.label||q.id]=Array.isArray(v)?v.join(" ; "):(v||"")}}));
   const payload={action:"questionnaire",cle:CLE,nom:a.nom||"",date:new Date().toISOString(),reponses:rep};
   const btn=$("mainBtn");btn.disabled=true;btn.innerHTML='<span class="spin"></span> Envoi…';
-  try{await post(payload);store.set("ptdq_sent",true);try{localStorage.removeItem("ptdq_draft")}catch(e){}view="done";render()}
-  catch(e){btn.disabled=false;btn.textContent="Réessayer l'envoi";toastErr(!navigator.onLine||e instanceof TypeError?"Pas de réseau pour le moment. Vos réponses sont gardées : réessayez quand vous captez.":"L'envoi n'a pas marché. Réessayez dans un instant.")}
+  try{await post(payload);fini(false)}
+  catch(e){
+    if(!navigator.onLine||e instanceof TypeError){if(store.set("ptdq_queue",payload)){fini(true);return}}
+    btn.disabled=false;btn.textContent="Réessayer l'envoi";toastErr("L'envoi n'a pas marché. Réessayez dans un instant.")}
 }
-function done(){$("app").innerHTML='<section class="screen done"><div class="check">✓</div><h1 class="q">Merci beaucoup !</h1><p class="help">Vos réponses vont nous aider à construire un assistant de dépannage vraiment utile pour vous.</p><div class="brandfoot"><img src="logo.png" alt="ProxiPause et Buenavita"></div></section>';chrome(false,null,null)}
+function fini(attente){store.set("ptdq_sent",true);try{localStorage.removeItem("ptdq_draft")}catch(e){}view="done";render()}
+async function flushQ(){const p=store.get("ptdq_queue",null);if(!p||ADRESSE_SCRIPT.indexOf("http")!==0)return;try{await post(p);try{localStorage.removeItem("ptdq_queue")}catch(e){}if(view==="done")render()}catch(e){}}
+window.addEventListener("online",flushQ);document.addEventListener("visibilitychange",()=>{if(!document.hidden)flushQ()});setTimeout(flushQ,1500);
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+function done(){const att=!!store.get("ptdq_queue",null);$("app").innerHTML='<section class="screen done"><div class="check">✓</div><h1 class="q">Merci beaucoup !</h1><p class="help">'+(att?'Pas de réseau pour l\'instant : vos réponses sont gardées sur le téléphone et partiront toutes seules dès que vous capterez. Pensez à rouvrir cette page une fois.':'Vos réponses vont nous aider à construire un assistant de dépannage vraiment utile pour vous.')+'</p><div class="brandfoot"><img src="logo.png" alt="ProxiPause et Buenavita"></div></section>';chrome(false,null,null)}
 render();
 })();
 </script>
